@@ -280,7 +280,7 @@ def generate_axi_pe(num_leaves, p, num_sent_per_leaf, args):
     '\tinput resend',
     '\t);',
     '\tparameter num_leaves= 8;',
-    '\tparameter payload_sz= $clog2(num_leaves) + ' + str(args.package_size - clog2(args.num_leaves) * 2 - 1) + ';',
+    '\tparameter payload_sz= $clog2(num_leaves) + ' + str(args.packet_size - clog2(args.num_leaves) * 2 - 1) + ';',
     '\tparameter p_sz= 1 + $clog2(num_leaves) + payload_sz; //packet size',
     '\tparameter addr=1;',
     '\tparameter level= 0;',

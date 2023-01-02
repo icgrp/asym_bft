@@ -5,12 +5,6 @@ module gen_nw_top # (
 	parameter p_sz= 49, //packet size
 	parameter addr= 0,
 	parameter level= 0
-	// parameter arm_data_width = 21,
-	// parameter num_leaves= 32,
-	// parameter payload_sz= 15,
-	// parameter p_sz= 21, //packet size
-	// parameter addr= 0,
-	// parameter level= 0
 	)(
 	input clk,
 	input [arm_data_width-1:0] data_in,

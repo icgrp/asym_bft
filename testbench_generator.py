@@ -26,7 +26,7 @@ def create_packet_creator(num_leaves, injection_rate, traffic_pattern, injection
     num_leaves_power_of_two = 2**clog2(num_leaves)
 
     for i in range(num_leaves):
-        if(traffic_pattern == "test_9" and i >= num_leaves_power_of_two//2): # slow injection rate in subtree2,3
+        if(traffic_pattern.startswith("test_9") and i >= num_leaves_power_of_two//2): # slow injection rate in subtree2,3
             injection_rate = injection_rate_slow
         num_sent_per_leaf = num_msg_list[i]
         code_packet_creator = '\n'.join([
@@ -46,7 +46,8 @@ def create_packet_creator(num_leaves, injection_rate, traffic_pattern, injection
             '\tparameter send_order_sz= $clog2(num_sent_per_leaf);',
             '\treg [send_order_sz:0] i;',
             '\treg send_out;',
-            '\tinteger seed= ' + str(random.randint(0,2**32-1)) + ';',
+            '\tinteger seed= 123456;', # chagned to deterministic
+            # '\tinteger seed= ' + str(random.randint(0,2**32-1)) + ';',
             '\treg [p_sz-1:0] data_to_be_sent[num_sent_per_leaf-1:0];', # changed
             '',            
             '\tinitial begin',
@@ -237,10 +238,10 @@ def make_test_pattern(traffic_pattern, num_leaves, num_sent_per_leaf, addr_width
 
     # write .trace files
     for addr_src in range(num_leaves):
-        file_name = "./data/bench/" + traffic_pattern + "/" + str(num_leaves) + "/autogen_" + str(addr_src) + ".trace"
         filedata = ""
+        file_name = "./data/bench/" + traffic_pattern + "/" + str(num_leaves) + "/autogen_" + str(addr_src) + ".trace"
 
-        if(traffic_pattern == "test_9"):
+        if(traffic_pattern.startswith("test_9")):
             num_valid_leaves_sparse = num_leaves - num_leaves_power_of_two//2 
             valid_leaves_s2s3 = get_valid_leaves_s2s3(num_leaves, num_valid_leaves_sparse)
 

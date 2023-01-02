@@ -91,8 +91,9 @@ def make_packet_creator(num_leaves, injection_rate, traffic_pattern, args):
         pc.write(tg.create_packet_creator(num_leaves, injection_rate, traffic_pattern, args.injection_rate_slow))
 
 def make_testbench(num_leaves, injection_rate, num_sent_per_leaf, addr_width, payload_width, traffic_pattern, args):  
-    if(args.traffic_pattern.startswith("test")): # Random synthetic test
-        tg.make_test_pattern(traffic_pattern, num_leaves,  num_sent_per_leaf, addr_width, payload_width, args.injection_rate_slow)
+    # Use pre-generated test pattern for reproducibility
+    # if(args.traffic_pattern.startswith("test")): # Random synthetic test
+    #     tg.make_test_pattern(traffic_pattern, num_leaves,  num_sent_per_leaf, addr_width, payload_width, args.injection_rate_slow)
     with open('gen_nw_tb.v', 'w') as tb:
         tb.write(tg.create_tb(traffic_pattern, num_leaves, injection_rate, addr_width, payload_width))
 
@@ -131,8 +132,8 @@ def save_simulation_log(args):
     nspl = args.num_sent_per_leaf
     num_leaves = args.num_leaves
 
-    if(tp == "test_9"):
-        filename = './logs_' + str(num_leaves) + '/' + str(ntw) + '_' + str(tp) + '_' + str(irt) + '-' + str(irt_s) + '_' + str(nspl) + '.log'
+    if(tp.startswith("test_9")):
+        filename = './logs_' + str(num_leaves) + '/' + str(ntw) + '_' + str(tp) + '_' + str(irt) + '_' + str(nspl) + '.log'
     else:
         filename = './logs_' + str(num_leaves) + '/' + str(ntw) + '_' + str(tp) + '_' + str(irt) + '_' + str(nspl) + '.log'        
     subprocess.call(['cp', 'simulation.log', filename])
@@ -299,7 +300,7 @@ if __name__ == '__main__':
     parser.add_argument('-pp', '--pipeline', type=int, default=0, help="pipeline the network")
     parser.add_argument('-v', '--verbose', help="print parameters for debugging", action='store_true')
     parser.add_argument('-s', '--synth', help="generate synthesizable gen_nw_vivado.v", action='store_true') # default false
-    parser.add_argument('-tp', '--traffic_pattern', type=str, default="complement", help="choose optimization type")
+    parser.add_argument('-tp', '--traffic_pattern', type=str, default="test_0", help="choose optimization type")
     # parser.add_argument('-oft', '--offset', type=int, default=5, help="the offset number for uniform")
     parser.add_argument('-irt', '--injection_rate', type=int, default=5, help="injectoin rate in percentage")
     parser.add_argument('-nspl', '--num_sent_per_leaf', type=int, default=30, help="num_sent_per_leaf")
@@ -327,8 +328,10 @@ if __name__ == '__main__':
     print("===================================")
     print("network: ", args.network)
     print("traffic pattern: ", args.traffic_pattern)
-    # print("num set per leaf: ", args.num_sent_per_leaf) # outdated
+    # print("num set per leaf: ", args.num_sent_per_leaf)
     print("injection rate: ", args.injection_rate)
+    if traffic_pattern.startswith("test_9"):
+        print("injection rate slow: ", args.injection_rate_slow)
     # print("args.packet_size: ", args.packet_size)
     # print("args.addr_width: ", addr_width)
     # print("args.synth: ", args.synth) # default false
