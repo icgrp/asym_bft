@@ -50,40 +50,40 @@ def gen_synth_file(num_leaves):
 def make_clean():
     subprocess.call(['make', 'clean'])
 
-def get_throughput(num_sent_per_leaf, args,
-                         filename='simulation.log'):
-    num_leaves = args.num_leaves
-    traffic_pattern = args.traffic_pattern
-    injection_rate_slow = args.injection_rate_slow
-    num_sent_per_leaf_slow = int(num_sent_per_leaf//(100/injection_rate_slow))
+# def get_throughput(num_sent_per_leaf, args,
+#                          filename='simulation.log'):
+#     num_leaves = args.num_leaves
+#     traffic_pattern = args.traffic_pattern
+#     injection_rate_slow = args.injection_rate_slow
+#     num_sent_per_leaf_slow = int(num_sent_per_leaf//(100/injection_rate_slow))
 
-    num_leaves_power_of_two = 2**clog2(num_leaves)
-    num_leaves_sparse = num_leaves - num_leaves_power_of_two//2 # num_leaves of G2/G3
+#     num_leaves_power_of_two = 2**clog2(num_leaves)
+#     num_leaves_sparse = num_leaves - num_leaves_power_of_two//2 # num_leaves of G2/G3
 
 
-    found_start = False
-    start_time = -1
-    end_time = -1
-    with open(filename, 'r') as f:
-        for line in f:
-            if(found_start == False):
-                if(line.startswith('sent')):
-                    data = line.split('\t')
-                    start_time = int(data[3])
-                    found_start = True
-            if(line.startswith('rcvd')):
-                data = line.split('\t')
-                end_time = int(data[3])
+#     found_start = False
+#     start_time = -1
+#     end_time = -1
+#     with open(filename, 'r') as f:
+#         for line in f:
+#             if(found_start == False):
+#                 if(line.startswith('sent')):
+#                     data = line.split('\t')
+#                     start_time = int(data[3])
+#                     found_start = True
+#             if(line.startswith('rcvd')):
+#                 data = line.split('\t')
+#                 end_time = int(data[3])
 
-    assert(start_time != -1 and end_time != -1)
-    elapsed_cycles = (end_time - start_time) / 20
-    # throughput = num_sent_per_leaf / elapsed_cycles
-    if(traffic_pattern == "test_9"):
-        num_pck_total = num_sent_per_leaf*num_leaves_power_of_two//2 + num_sent_per_leaf_slow*num_leaves_sparse
-    else:
-        num_pck_total = num_sent_per_leaf*num_leaves
-    throughput = (num_pck_total / elapsed_cycles) / num_leaves # pkt/cyc/PE
-    return throughput
+#     assert(start_time != -1 and end_time != -1)
+#     elapsed_cycles = (end_time - start_time) / 20
+#     # throughput = num_sent_per_leaf / elapsed_cycles
+#     if(traffic_pattern == "test_9"):
+#         num_pck_total = num_sent_per_leaf*num_leaves_power_of_two//2 + num_sent_per_leaf_slow*num_leaves_sparse
+#     else: # Bug!!!! increases throughput for test_3 and test_7
+#         num_pck_total = num_sent_per_leaf*num_leaves
+#     throughput = (num_pck_total / elapsed_cycles) / num_leaves # pkt/cyc/PE
+#     return throughput
 
 
 def make_packet_creator(num_leaves, injection_rate, traffic_pattern, args):
@@ -134,7 +134,7 @@ def save_simulation_log(args):
     if(tp == "test_9"):
         filename = './logs_' + str(num_leaves) + '/' + str(ntw) + '_' + str(tp) + '_' + str(irt) + '-' + str(irt_s) + '_' + str(nspl) + '.log'
     else:
-        filename = './logs_' + str(num_leaves) + '/' + str(tp) + '_' + str(irt) + '_' + str(nspl) + '.log'        
+        filename = './logs_' + str(num_leaves) + '/' + str(ntw) + '_' + str(tp) + '_' + str(irt) + '_' + str(nspl) + '.log'        
     subprocess.call(['cp', 'simulation.log', filename])
 
 
