@@ -102,7 +102,7 @@ def create_tb(traffic_pattern, num_leaves, injection_rate, addr_width, payload_s
 
     avg_num_sent_per_leaf = sum(num_msg_list)//len(num_msg_list)
     if(injection_rate < 50):
-        wait_time = 50 + round(20*avg_num_sent_per_leaf*90*2) # relax the conservative wait time
+        wait_time = 50 + round(20*avg_num_sent_per_leaf*90*3) # relax the conservative wait time
     else:
         wait_time = 50 + round(20*avg_num_sent_per_leaf*90*100/injection_rate)
 
