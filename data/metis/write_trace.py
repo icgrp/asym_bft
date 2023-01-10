@@ -53,6 +53,8 @@ if __name__ == '__main__':
         if(is_reverse):
             with open("./" + benchmark_name + "/autogen_" + str(BFT_N-1-i) + ".trace","w") as file:
                 for addr_des in addr_des_list:
+                    addr_des = int(addr_des)
+                    addr_des = addr_des-1
                     addr_des = BFT_N-1-int(addr_des)
                     addr_src = BFT_N-1-i
                     # packet = "1" + binary_output(addr_width, addr_des) + binary_output(addr_width, addr_src) + binary_output(data_width, data)
@@ -66,6 +68,7 @@ if __name__ == '__main__':
             with open("./" + benchmark_name + "/autogen_" + str(i) + ".trace","w") as file:
                 for addr_des in addr_des_list:
                     addr_des = int(addr_des)
+                    addr_des = addr_des-1
                     addr_src = i
                     # packet = "1" + binary_output(addr_width, addr_des) + binary_output(addr_width, addr_src) + binary_output(data_width, data)
                     packet = "1" + binary_output(addr_width, addr_des) + binary_output(addr_width, addr_src) \
