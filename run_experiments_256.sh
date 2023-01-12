@@ -39,7 +39,7 @@ done
 
 # Realistic workloads
 
-# TEST_SET=("soc_rev" "human_rev" "facebook_rev" "DE_edges" "fb-new_sites_edges_rev" "fb-government_edges_rev" "fb-tvshow_edges" "CA-HepTh_rev" "CA-CondMat")
+# TEST_SET=("CA-CondMat" "CA-HepTh_rev" "DE_edges" "deezer_europe_edges_rev" "Email-Enron_rev" "fb-government_edges_rev" "fb-new_sites_edges_rev" "human_rev" "simucad_dac" "soc_rev" "stanford")
 # INJECTION_RATE_SET=(1 3 5 7 10 20 30 50 100)
 
 # IR=100
