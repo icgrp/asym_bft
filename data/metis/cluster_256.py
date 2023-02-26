@@ -25,7 +25,7 @@ def gen_clustered_graphfile(graph_filename, get_clustered_id):
         i_dst = 1
         lines = file.readlines()
         for old_node_id, line in enumerate(lines[1:]): # skip 1st line (nodes, edges)
-            old_node_id = old_node_id + 1 # metis output starts from 0... so
+            old_node_id = old_node_id + 1 # graphfile starts from 0... so
             clustered_list = [get_clustered_id[int(elem)] for elem in line.strip().split()]
             cluster_id = get_clustered_id[old_node_id]
             add_key(cluster_dict, cluster_id)

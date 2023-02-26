@@ -301,7 +301,6 @@ if __name__ == '__main__':
     parser.add_argument('-v', '--verbose', help="print parameters for debugging", action='store_true')
     parser.add_argument('-s', '--synth', help="generate synthesizable gen_nw_vivado.v", action='store_true') # default false
     parser.add_argument('-tp', '--traffic_pattern', type=str, default="test_0", help="choose optimization type")
-    # parser.add_argument('-oft', '--offset', type=int, default=5, help="the offset number for uniform")
     parser.add_argument('-irt', '--injection_rate', type=int, default=5, help="injectoin rate in percentage")
     parser.add_argument('-nspl', '--num_sent_per_leaf', type=int, default=30, help="num_sent_per_leaf")
     parser.add_argument('-pks', '--packet_size', type=int, default=52, help="the width for each package")
@@ -323,7 +322,6 @@ if __name__ == '__main__':
     addr_width = ng.clog2(args.num_leaves)
     payload_width = args.packet_size - ng.clog2(args.num_leaves) - 1 # same as payload_sz
     traffic_pattern = args.traffic_pattern
-    # traffic_params = {'pattern':args.traffic_pattern, 'offset':args.offset}
 
     print("===================================")
     print("network: ", args.network)
@@ -334,9 +332,7 @@ if __name__ == '__main__':
         print("injection rate slow: ", args.injection_rate_slow)
     # print("args.packet_size: ", args.packet_size)
     # print("args.addr_width: ", addr_width)
-    # print("args.synth: ", args.synth) # default false
     print("args.src_gen: ",args.src_gen) # default true, outdated
-    # print(traffic_params)
     print("-----------------------------------")
 
     if args.synth:
