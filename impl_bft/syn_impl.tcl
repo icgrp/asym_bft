@@ -7,7 +7,8 @@ set synth_file_name "${bft_name}_synth.dcp"
 set routed_file_name "${bft_name}_routed.dcp"
 
 set report_name "${bft_name}_report.txt"
-set t_report_name "${bft_name}_t_report.txt"
+set timing_report_name "${bft_name}_timing_report.txt"
+set pow_report_name "${bft_name}_pow_report.txt"
 
 add_files ./$dir_name/gen_nw_$bft_name.v
 add_files axi_pe_$num_leaves.v
@@ -20,4 +21,5 @@ place_design
 route_design
 write_checkpoint -force ./routed_dcp/$dir_name/$routed_file_name
 report_utilization -force -hierarchical -file ./report/$dir_name/$report_name
-report_timing_summary > ./report/$dir_name/$t_report_name
+report_timing_summary > ./report/$dir_name/$timing_report_name
+report_power > ./report/$dir_name/$pow_report_name

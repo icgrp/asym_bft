@@ -19,8 +19,8 @@ def binary_output(width, data_in):
 BFT_N = 256
 PACKET_SIZE = 32
 addr_width = clog2(BFT_N)
-data_width = 32
-dummy_width = 11 - addr_width
+data_width = 16
+dummy_width = 32 - 1 - addr_width - data_width
 
 '''
 Create trace file for simulation 
@@ -30,11 +30,14 @@ if __name__ == '__main__':
     parser.add_argument('-n', '--benchmark_name', type=str, help="benchmark name, output dir name")
     parser.add_argument('-gf', '--graph_filename', type=str, help="graphfile after 256-clustering")
     parser.add_argument('-r', '--reverse', help="addr reverse", action='store_true') # default False
+    parser.add_argument('-r_12', '--reverse_12', help="swap quad1 and quad2", action='store_true') # default False
+
     args = parser.parse_args()
 
     clustered_graph_filename = args.graph_filename
     benchmark_name = args.benchmark_name
     is_reverse = args.reverse
+    is_reverse_12 = args.reverse_12
     max_data = 2**data_width-1
 
     with open(clustered_graph_filename, "r") as file:
@@ -43,6 +46,8 @@ if __name__ == '__main__':
 
     if(is_reverse):
         benchmark_name = benchmark_name + "_rev" + "/" + str(BFT_N)
+    elif(is_reverse_12):
+        benchmark_name = benchmark_name + "_rev_12" + "/" + str(BFT_N)
     else:
         benchmark_name = benchmark_name + "/" + str(BFT_N)
     os.system("mkdir -p " + benchmark_name)
@@ -51,6 +56,7 @@ if __name__ == '__main__':
         data = 0
         filedata = ""
         if(is_reverse):
+            # print(benchmark_name)
             with open("./" + benchmark_name + "/autogen_" + str(BFT_N-1-i) + ".trace","w") as file:
                 for addr_des in addr_des_list:
                     addr_des = int(addr_des)
@@ -58,12 +64,46 @@ if __name__ == '__main__':
                     addr_des = BFT_N-1-int(addr_des)
                     addr_src = BFT_N-1-i
                     # packet = "1" + binary_output(addr_width, addr_des) + binary_output(addr_width, addr_src) + binary_output(data_width, data)
-                    packet = "1" + binary_output(addr_width, addr_des) + binary_output(addr_width, addr_src) \
+                    # packet = "1" + binary_output(addr_width, addr_des) + binary_output(addr_width, addr_src) \
+                    #              + binary_output(dummy_width, 0) + binary_output(data_width, data)
+                    packet = "1" + binary_output(addr_width, addr_des)\
                                  + binary_output(dummy_width, 0) + binary_output(data_width, data)
                     filedata += packet + "\n"
                     data += 1
                 assert(data <= max_data) # if fails, change PACKET_SIZE
                 file.write(filedata)
+        elif(is_reverse_12):
+            if i < BFT_N/2:
+                with open("./" + benchmark_name + "/autogen_" + str(BFT_N//2-1-i) + ".trace","w") as file:
+                    for addr_des in addr_des_list:
+                        addr_des = int(addr_des)
+                        addr_des = addr_des-1
+                        if addr_des < BFT_N/2:
+                            addr_des = BFT_N//2-1-int(addr_des)
+                        addr_src = BFT_N//2-1-i
+                        # packet = "1" + binary_output(addr_width, addr_des) + binary_output(addr_width, addr_src) + binary_output(data_width, data)
+                        # packet = "1" + binary_output(addr_width, addr_des) + binary_output(addr_width, addr_src) \
+                        #              + binary_output(dummy_width, 0) + binary_output(data_width, data)
+                        packet = "1" + binary_output(addr_width, addr_des)\
+                                     + binary_output(dummy_width, 0) + binary_output(data_width, data)
+                        filedata += packet + "\n"
+                        data += 1
+                    assert(data <= max_data) # if fails, change PACKET_SIZE
+                    file.write(filedata)
+            else:
+                with open("./" + benchmark_name + "/autogen_" + str(i) + ".trace","w") as file:
+                    for addr_des in addr_des_list:
+                        addr_des = int(addr_des)
+                        addr_des = addr_des-1
+                        if addr_des < BFT_N/2:
+                            addr_des = BFT_N//2-1-int(addr_des)
+                        addr_src = i
+                        packet = "1" + binary_output(addr_width, addr_des)\
+                                     + binary_output(dummy_width, 0) + binary_output(data_width, data)
+                        filedata += packet + "\n"
+                        data += 1
+                    assert(data <= max_data) # if fails, change PACKET_SIZE
+                    file.write(filedata)
         else:
             with open("./" + benchmark_name + "/autogen_" + str(i) + ".trace","w") as file:
                 for addr_des in addr_des_list:
@@ -71,7 +111,9 @@ if __name__ == '__main__':
                     addr_des = addr_des-1
                     addr_src = i
                     # packet = "1" + binary_output(addr_width, addr_des) + binary_output(addr_width, addr_src) + binary_output(data_width, data)
-                    packet = "1" + binary_output(addr_width, addr_des) + binary_output(addr_width, addr_src) \
+                    # packet = "1" + binary_output(addr_width, addr_des) + binary_output(addr_width, addr_src) \
+                    #              + binary_output(dummy_width, 0) + binary_output(data_width, data)
+                    packet = "1" + binary_output(addr_width, addr_des)\
                                  + binary_output(dummy_width, 0) + binary_output(data_width, data)
                     filedata += packet + "\n"
                     data += 1

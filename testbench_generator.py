@@ -102,7 +102,9 @@ def create_tb(traffic_pattern, num_leaves, injection_rate, addr_width, payload_s
 
     avg_num_sent_per_leaf = sum(num_msg_list)//len(num_msg_list)
     if(injection_rate < 50):
+        # wait_time = 50 + round(20*avg_num_sent_per_leaf*90*3) # relax the conservative wait time
         wait_time = 50 + round(20*avg_num_sent_per_leaf*90*3) # relax the conservative wait time
+
     else:
         wait_time = 50 + round(20*avg_num_sent_per_leaf*90*100/injection_rate)
 
@@ -242,6 +244,7 @@ def make_test_pattern(traffic_pattern, num_leaves, num_sent_per_leaf, addr_width
         file_name = "./data/bench/" + traffic_pattern + "/" + str(num_leaves) + "/autogen_" + str(addr_src) + ".trace"
 
         if(traffic_pattern.startswith("test_9")):
+            # Below lines are for when N=24, etc, not power of two
             num_valid_leaves_sparse = num_leaves - num_leaves_power_of_two//2 
             valid_leaves_s2s3 = get_valid_leaves_s2s3(num_leaves, num_valid_leaves_sparse)
 
@@ -263,6 +266,42 @@ def make_test_pattern(traffic_pattern, num_leaves, num_sent_per_leaf, addr_width
                     else:
                         addr_des = addr_src
                         valid = "0"
+                    packet = valid + binary_output(addr_width, addr_des) + binary_output(addr_width, addr_src) + \
+                                     binary_output(dummy_width, 0) + binary_output(data_width, data)
+                    filedata += packet + "\n"
+        elif(traffic_pattern.startswith("test_10")):
+            # num_valid_leaves_sparse = num_leaves - num_leaves_power_of_two//2 
+            # valid_leaves_s2s3 = get_valid_leaves_s2s3(num_leaves, num_valid_leaves_sparse)
+
+            # densest part, subtree_0
+            if(addr_src < int(num_leaves_power_of_two//4)):
+                for data in range(0, num_sent_per_leaf):
+                    valid_leaves_des = list(range(0, num_leaves_power_of_two//4))
+                    valid_leaves_des.remove(addr_src)
+                    addr_des = random.choice(valid_leaves_des)
+                    valid = "1"
+                    packet = valid + binary_output(addr_width, addr_des) + binary_output(addr_width, addr_src) + \
+                                     binary_output(dummy_width, 0) + binary_output(data_width, data)
+                    filedata += packet + "\n"
+            # dense part, subtree_1
+            elif(int(num_leaves_power_of_two//4) <= addr_src and addr_src < int(num_leaves_power_of_two/2)):
+                num_sent_per_leaf_slow = int(num_sent_per_leaf//(100/injection_rate_slow))
+                for data in range(0, num_sent_per_leaf_slow):
+                    valid_leaves_des = list(range(0, num_leaves_power_of_two//4))
+                    # valid_leaves_des.remove(addr_src)
+                    addr_des = random.choice(valid_leaves_des)
+                    valid = "1"
+                    packet = valid + binary_output(addr_width, addr_des) + binary_output(addr_width, addr_src) + \
+                                     binary_output(dummy_width, 0) + binary_output(data_width, data)
+                    filedata += packet + "\n"
+            # sparse part, subtree_2 and subtree_3
+            else:
+                num_sent_per_leaf_slow = int(num_sent_per_leaf//(100/injection_rate_slow))
+                for data in range(0, num_sent_per_leaf_slow):
+                    valid_leaves_des = list(range(0, num_leaves_power_of_two//4))
+                    # valid_leaves_des.remove(addr_src)
+                    addr_des = random.choice(valid_leaves_des)
+                    valid = "1"
                     packet = valid + binary_output(addr_width, addr_des) + binary_output(addr_width, addr_src) + \
                                      binary_output(dummy_width, 0) + binary_output(data_width, data)
                     filedata += packet + "\n"
@@ -376,3 +415,11 @@ def test_9(addr_src, num_leaves_power_of_two):
     if(addr_src in valid_leaves_des): # subtree_0/1 case
         valid_leaves_des.remove(addr_src) # except self
     return random.choice(valid_leaves_des)
+
+# test_10: subtree_0 sends to subtree_0
+# subtree_1,2,3 sends to subtree_0 in low injection rate
+# def test_10(addr_src, num_leaves_power_of_two):
+#     valid_leaves_des = list(range(0, num_leaves_power_of_two//2))
+#     if(addr_src in valid_leaves_des): # subtree_0/1 case
+#         valid_leaves_des.remove(addr_src) # except self
+#     return random.choice(valid_leaves_des)

@@ -1,8 +1,8 @@
 module gen_nw_top # (
-	parameter arm_data_width = 52,
+	parameter arm_data_width = 32,
 	parameter num_leaves= 256,
-	parameter payload_sz= 43,
-	parameter p_sz= 52, //packet size
+	parameter payload_sz= 23,
+	parameter p_sz= 32, //packet size
 	parameter addr= 0,
 	parameter level= 0
 	)(
@@ -51,7 +51,7 @@ module gen_nw_top # (
 		);
 	end
 	endgenerate
-	gen_nw #(
+	(* DONT_TOUCH = "yes" *) gen_nw #(
 		.num_leaves(num_leaves),
 		.payload_sz(payload_sz),
 		.p_sz(p_sz),
@@ -68,7 +68,7 @@ endmodule
 
 module pe_shift # (
 	parameter num_leaves= 256,
-	parameter payload_sz= $clog2(num_leaves) + 21,
+	parameter payload_sz= 23,
 	parameter p_sz= 1 + $clog2(num_leaves) + payload_sz //packet size
 	)(
 	input clk,
@@ -84,10 +84,10 @@ module pe_shift # (
 				if (resend) begin
 					pe_interface <= 0;
 				end else begin   
-					pe_interface[p_sz-2-2*$clog2(num_leaves):0] <= interface_pe[p_sz-2-2*$clog2(num_leaves):0] + 1;
-					pe_interface[p_sz-2-$clog2(num_leaves):p_sz-1-2*$clog2(num_leaves)] <= interface_pe[p_sz-2-$clog2(num_leaves):p_sz-1-2*$clog2(num_leaves)] + 1;
-					pe_interface[p_sz-2:p_sz-1-$clog2(num_leaves)] <= interface_pe[p_sz-2:p_sz-1-$clog2(num_leaves)] + 1;
-					pe_interface[p_sz-1] <= interface_pe[p_sz-1];
+					pe_interface[15:0] <= interface_pe[15:0] + 1; // data
+					pe_interface[p_sz-2-$clog2(num_leaves):p_sz-1-2*$clog2(num_leaves)] <= interface_pe[p_sz-2-$clog2(num_leaves):p_sz-1-2*$clog2(num_leaves)]; // sequence bits
+					pe_interface[p_sz-2:p_sz-1-$clog2(num_leaves)] <= interface_pe[p_sz-2:p_sz-1-$clog2(num_leaves)] + 1; // leaf number
+					pe_interface[p_sz-1] <= interface_pe[p_sz-1]; // valid bit
 				end
 			end
 		end
@@ -95,7 +95,7 @@ endmodule
 
 module pe_start # (
 	parameter num_leaves= 256,
-	parameter payload_sz= $clog2(num_leaves) + 4,
+	parameter payload_sz= 23,
 	parameter p_sz= 1 + $clog2(num_leaves) + payload_sz
 	)(
 	input clk,

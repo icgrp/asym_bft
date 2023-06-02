@@ -92,8 +92,9 @@ def make_packet_creator(num_leaves, injection_rate, traffic_pattern, args):
 
 def make_testbench(num_leaves, injection_rate, num_sent_per_leaf, addr_width, payload_width, traffic_pattern, args):  
     # Use pre-generated test pattern for reproducibility
-    # if(args.traffic_pattern.startswith("test")): # Random synthetic test
-    #     tg.make_test_pattern(traffic_pattern, num_leaves,  num_sent_per_leaf, addr_width, payload_width, args.injection_rate_slow)
+    is_testbench_gen = args.testbench_gen
+    if(args.traffic_pattern.startswith("test") and is_testbench_gen): # Random synthetic test
+        tg.make_test_pattern(traffic_pattern, num_leaves,  num_sent_per_leaf, addr_width, payload_width, args.injection_rate_slow)
     with open('gen_nw_tb.v', 'w') as tb:
         tb.write(tg.create_tb(traffic_pattern, num_leaves, injection_rate, addr_width, payload_width))
 
@@ -247,16 +248,18 @@ def simulate_more(simulation_num, addr_width, payload_width, traffic_pattern, ar
     i = 0
     latency_sum = 0
     simulation_true = True
+
     while i<simulation_num:
         i += 1;
         if args.network is None:
             make_src_modules(num_leaves, p, payload_width, args)
+        
         make_test(num_leaves, injection_rate, traffic_pattern, num_sent_per_leaf, addr_width, payload_width, args)
         make_simulation_log(args)
         sent_dict, received_dict= parse_simulation_log(num_leaves)
         # print(sent_dict)
         # print(received_dict)
-        save_simulation_log(args)
+        # save_simulation_log(args)
         bool_val, avg_latency, worst_latency = verify_simulation(sent_dict, received_dict)
 
         if bool_val != True:
@@ -313,6 +316,7 @@ if __name__ == '__main__':
                                             choices=["regular","pptt"], \
                                             help="ptpt(regular) or pptt, only applicable when p==0.5")
     parser.add_argument('-irt_s', '--injection_rate_slow', type=int, default=5)
+    parser.add_argument('-tb', '--testbench_gen', help="generate deterministic test data", action='store_true') # default false
 
     args = parser.parse_args()
     num_leaves = args.num_leaves
@@ -322,27 +326,31 @@ if __name__ == '__main__':
     addr_width = ng.clog2(args.num_leaves)
     payload_width = args.packet_size - ng.clog2(args.num_leaves) - 1 # same as payload_sz
     traffic_pattern = args.traffic_pattern
+    is_testbench_gen = args.testbench_gen
 
     print("===================================")
     print("network: ", args.network)
     print("traffic pattern: ", args.traffic_pattern)
     # print("num set per leaf: ", args.num_sent_per_leaf)
     print("injection rate: ", args.injection_rate)
-    if traffic_pattern.startswith("test_9"):
+    if traffic_pattern.startswith("test_9") or traffic_pattern.startswith("test_10") :
         print("injection rate slow: ", args.injection_rate_slow)
     # print("args.packet_size: ", args.packet_size)
     # print("args.addr_width: ", addr_width)
-    print("args.src_gen: ",args.src_gen) # default true, outdated
+    # print("args.src_gen: ",args.src_gen) # default true, outdated
     print("-----------------------------------")
 
-    if args.synth:
-        make_network(num_leaves, p, payload_width, args)
-        gen_synth_file(num_leaves)
+    if is_testbench_gen:
+        make_test(num_leaves, injection_rate, traffic_pattern, num_sent_per_leaf, addr_width, payload_width, args)
     else:
-        avg_latency, worst_latency, throughput = simulate_more(1, addr_width, payload_width, traffic_pattern, args)
+        if args.synth:
+            make_network(num_leaves, p, payload_width, args)
+            gen_synth_file(num_leaves)
+        else:
+            avg_latency, worst_latency, throughput = simulate_more(1, addr_width, payload_width, traffic_pattern, args)
 
-        if(args.network is not None):
-            # assert(traffic_params['pattern'].startswith('test'))
-            record_results(traffic_pattern, avg_latency, worst_latency, throughput, args)
+            if(args.network is not None):
+                # assert(traffic_params['pattern'].startswith('test'))
+                record_results(traffic_pattern, avg_latency, worst_latency, throughput, args)
 
 #    make_clean()
