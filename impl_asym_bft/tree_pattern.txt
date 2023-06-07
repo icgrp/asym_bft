@@ -1,0 +1,22 @@
+0 323216
+["pi,pi,t,pi,pi,pi","pi,pi,t,pi,pi,pi","pi,t,t,t,pi,pi,pi"]
+1 32328
+["pi,pi,pi,t,pi,pi","pi,pi,pi,t,pi,pi","t,pi,t,pi,t,pi,t"]
+2 32328
+["pi,pi,t,pi,pi,pi","pi,pi,pi,t,pi,pi","t,pi,t,pi,t,pi,t"]
+3 32328
+["pi,t,pi,pi,pi,pi","pi,pi,pi,t,pi,pi","t,pi,t,pi,t,pi,t"]
+4 32328
+["pi,t,pi,pi,pi,pi","pi,t,pi,pi,pi,pi","t,pi,t,pi,t,pi,t"]
+5 32328
+["t,pi,pi,pi,pi,pi","pi,t,pi,pi,pi,pi","t,pi,t,pi,t,pi,t"]
+6 32328
+["pi,pi,pi,pi,pi,t","pi,pi,pi,pi,pi,t","t,pi,t,pi,t,pi,t"]
+7 32328
+["pi,pi,pi,pi,t,pi","pi,pi,pi,t,pi,pi","t,t,pi,pi,t,pi,t"]
+8 32324
+["pi,pi,pi,pi,t,pi","pi,pi,pi,pi,t,pi","t,t,pi,t,t,pi,t"]
+9 64168
+["pi,pi,pi,pi,pi,pi","pi,pi,t,t,pi,pi","t,pi,t,pi,t,pi,t"]
+10 64168
+["pi,pi,pi,pi,pi,pi","pi,t,pi,t,pi,pi","t,pi,t,pi,t,pi,t"]
