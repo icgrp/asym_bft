@@ -6,5 +6,6 @@ For simulation:
 For implementaion:
 - In gen_asym_bft.py, function build_end(), comment 'f = open("bft_asym_fixed_sim.txt", "r")' out and uncomment 'f = open("bft_asym_fixed_impl.txt", "r")'.
 - Put desired bft patterns into the file 'tree_pattern.txt'.
+- Run 'python3 ./asym_impl.py' to obtain all the asym_bft files
 - Modify the arguments for running run_tcl.sh in the file 'run_syn_impl.sh' (change the number after 'as').
 - Run 'bash run_syn_impl.sh'.
