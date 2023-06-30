@@ -5,7 +5,7 @@ from math import ceil, log
 def clog2(num):
     return int(ceil(log(num, 2)))
 
-def build_bft_asym(pattern, filename="gen_nw.v") :
+def build_bft_asym(pattern, filename="gen_nw.v", num_leaf = 256) :
     # pattern = '["pi,pi,pi,pi,pi,pi","pi,pi,t,t,pi,pi","t,pi,t,pi,t,pi,t"]'
 
     if pattern == '':
@@ -50,11 +50,11 @@ def build_bft_asym(pattern, filename="gen_nw.v") :
 
     t3_num_switch = 2**t3_pi_num
 
-    text_out = build_level0(type3)
+    text_out = build_level0(type3, num_leaf)
     type3_6 = type3Pattern.pop()
     text_out += build_level1(type1Pattern, type2Pattern, type3Pattern, type3_6)
-    text_out += build_leveln(type1Pattern, type2Pattern, type3Pattern)
-    text_out += build_level8()
+    text_out += build_leveln(type1Pattern, type2Pattern, type3Pattern, num_leaf)
+    text_out += build_level8(num_leaf)
     text_out += hetero_sw(t1_num_switch, t2_num_switch, t3_num_switch)
     text_out += build_end()
 
@@ -62,7 +62,7 @@ def build_bft_asym(pattern, filename="gen_nw.v") :
     f.write(text_out)
     f.close()
 
-def build_level0(type3) :
+def build_level0(type3, num_leaf) :
     type3Pattern = type3.split(',')
     t_num = 0
     pi_num = 0
@@ -78,7 +78,7 @@ def build_level0(type3) :
     return '\n'.join([
         '//--------level=0--------------',
         'module  gen_nw # (',
-        '\tparameter num_leaves= 256,',
+        '\tparameter num_leaves= '+str(num_leaf)+',',
         '\tparameter payload_sz= 23,',
         '\tparameter p_sz= 1 + $clog2(num_leaves) + payload_sz, //packet size',
         '\tparameter addr= 0,',
@@ -86,9 +86,9 @@ def build_level0(type3) :
         '\t) (',
         '\tinput clk,',
         '\tinput reset,',
-        '\tinput [p_sz*256-1:0] pe_interface,',
-        '\toutput [p_sz*256-1:0] interface_pe,',
-        '\toutput [256-1:0] resend',
+        '\tinput [p_sz*'+str(num_leaf)+'-1:0] pe_interface,',
+        '\toutput [p_sz*'+str(num_leaf)+'-1:0] interface_pe,',
+        '\toutput ['+str(num_leaf)+'-1:0] resend',
         '\t);',
         '\twire [p_sz*'+str(num_switch)+'-1:0] left_switch_0_0;',
         '\twire [p_sz*'+str(num_switch)+'-1:0] right_switch_0_0;',
@@ -231,7 +231,7 @@ def build_level1(type1Pattern, type2Pattern, type3Pattern, type3_6) :
         '\t\t.r_bus_o(switch_right_1_0));'
     ]) + '\n' + cluster_type
 
-def build_leveln(type1Pattern, type2Pattern, type3Pattern) :
+def build_leveln(type1Pattern, type2Pattern, type3Pattern, num_leaf) :
     t1_t_num = 0
     t1_pi_num = 0
     t2_t_num = 0
@@ -272,14 +272,16 @@ def build_leveln(type1Pattern, type2Pattern, type3Pattern) :
 
     str_return = ''
 
-    for level in range(2, 8) :
+    max_layer = clog2(num_leaf) - 1
+
+    for level in range(2, clog2(num_leaf)) :
         addr_cnt = 0
         num_switch_each_branch = 2**level
         num_switch = 2**(level-2)
         str_return += '//--------level='+str(level)+'--------------\n'
 
         for index in range(4) :
-            if (pattern[index][7-level] == 'pi') :
+            if (pattern[index][max_layer-level] == 'pi') :
                 switch_factor[index] *= 2
             else :
                 switch_factor[index] *= 1
@@ -298,7 +300,7 @@ def build_leveln(type1Pattern, type2Pattern, type3Pattern) :
 
             curr_num_switch = int(num_switch_array[index] / switch_factor[index])
 
-            switch_type = pattern[index][7-level]
+            switch_type = pattern[index][max_layer-level]
 
             for num in range(num_switch) :
                 if switch_type == 'pi' :
@@ -309,19 +311,21 @@ def build_leveln(type1Pattern, type2Pattern, type3Pattern) :
 
     return str_return
 
-def build_level8() :
+def build_level8(num_leaf) :
     str_return = '//--------level=8--------------\n'
-    for addr in range(256) :
-        str_return += interface(addr)
+    for addr in range(num_leaf) :
+        str_return += interface(addr, num_leaf)
 
     return str_return + 'endmodule\n\n'
 
-def interface(addr) :
+def interface(addr, num_leaf) :
     u_bus = ''
     if addr % 2 : 
         u_bus = 'right'
     else :
         u_bus = 'left'
+    
+    max_layer = clog2(num_leaf) - 1
 
     return '\n'.join([
         '\tinterface #(',
@@ -332,8 +336,8 @@ def interface(addr) :
         '\t\t)interface_'+str(addr)+'(',
         '\t\t.clk(clk),',
         '\t\t.reset(reset),',
-        '\t\t.bus_i(switch_'+u_bus+'_7_'+str(addr//2)+'),',
-        '\t\t.bus_o('+u_bus+'_switch_7_'+str(addr//2)+'),',
+        '\t\t.bus_i(switch_'+u_bus+'_'+str(max_layer)+'_'+str(addr//2)+'),',
+        '\t\t.bus_o('+u_bus+'_switch_'+str(max_layer)+'_'+str(addr//2)+'),',
         '\t\t.pe_interface(pe_interface[p_sz*'+str(addr+1)+'-1:p_sz*'+str(addr)+']),',
         '\t\t.interface_pe(interface_pe[p_sz*'+str(addr+1)+'-1:p_sz*'+str(addr)+']),',
         '\t\t.resend(resend['+str(addr)+']));\n\n'
