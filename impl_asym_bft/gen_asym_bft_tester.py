@@ -66,8 +66,8 @@ def make_testbench(num_leaves, injection_rate, num_sent_per_leaf, addr_width, da
                      num_sent_per_leaf, addr_width, data_width))
 
 def make_network():
-    pattern = '["pi,pi,pi,pi,t,pi","pi,pi,pi,t,pi,pi","t,t,pi,pi,t,pi,t"]'
-    ng.build_bft_asym(pattern)
+    pattern = '["pi,pi,pi,pi,pi,pi,pi","pi,t,pi,t,pi,t,pi","t,pi,t,t,t,t,pi,t"]'
+    ng.build_bft_asym(pattern, num_leaf=num_leaves)
     # test = 1 + 1
 
 def make_all_modules(num_leaves, p, num_sent_per_leaf,
