@@ -1,7 +1,7 @@
 For simulation:
 - In gen_asym_bft.py, function build_end(), uncomment 'f = open("bft_asym_fixed_sim.txt", "r")' and comment 'f = open("bft_asym_fixed_impl.txt", "r")' out.
 - Assign the bft pattern to the variable 'pattern' in function 'make_network()'.
-- Run 'python3 ./gen_asym_bft_tester.py -nl 256'
+- Run 'python3 ./gen_asym_bft_tester.py -nl num_leaves', where 'num_leaves' is the numerical expression of number of leaves, e.g.256.
 
 For implementaion:
 - In gen_asym_bft.py, function build_end(), comment 'f = open("bft_asym_fixed_sim.txt", "r")' out and uncomment 'f = open("bft_asym_fixed_impl.txt", "r")'.
