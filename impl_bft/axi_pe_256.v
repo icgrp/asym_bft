@@ -51,7 +51,7 @@ module gen_nw_top # (
 		);
 	end
 	endgenerate
-	(* DONT_TOUCH = "yes" *) gen_nw #(
+	gen_nw #(
 		.num_leaves(num_leaves),
 		.payload_sz(payload_sz),
 		.p_sz(p_sz),

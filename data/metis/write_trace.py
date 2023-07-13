@@ -17,10 +17,10 @@ def binary_output(width, data_in):
 
 
 BFT_N = 256
-PACKET_SIZE = 32
+PACKET_SIZE = 52
 addr_width = clog2(BFT_N)
-data_width = 16
-dummy_width = 32 - 1 - addr_width - data_width
+data_width = 32
+dummy_width = 52 - 1 - addr_width - data_width
 
 '''
 Create trace file for simulation 

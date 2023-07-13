@@ -17,6 +17,7 @@ synth_design -top $top_name -part $part_name -mode out_of_context
 write_checkpoint -force ./synth_dcp/$dir_name/$synth_file_name
 
 opt_design
+power_opt_design
 place_design
 route_design
 write_checkpoint -force ./routed_dcp/$dir_name/$routed_file_name
