@@ -16,3 +16,15 @@ impl_*/routed_dcp
 impl_*/synth_dcp
 
 logs_*
+
+
+data/metis/*
+!data/metis/snap/
+data/metis/snap/*_graphfile*
+
+*.backup.jou
+*.backup.log
+*vivado.log
+*vivado.jou
+*.str
+*/.Xil/*
